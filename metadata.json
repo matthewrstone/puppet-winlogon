@@ -1,0 +1,21 @@
+{
+  "name": "souldo-winlogon",
+  "version": "1.0.0",
+  "author": "Matthew Stone",
+  "summary": "Manage the Windows Logon Message (Like MOTD for Windows)",
+  "license": "Apache 2.0",
+  "source": "https://github.com/matthewrstone/puppet-winlogon",
+  "project_page": "https://github.com/matthewrstone/puppet-winlogon",
+  "issues_url": "https://github.com/matthewrstone/puppet-winlogon/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_range": ">= 1.0.0"
+    },
+    {
+      "name": "puppetlabs-registry",
+      "version_range": ">= 1.0.0"
+    }
+  ]
+}
+
