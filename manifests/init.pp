@@ -1,45 +1,50 @@
-# == Class: winlogon
+# winlogon
 #
-# Full description of class winlogon here.
+# Description: Manages the Windows Logon message
 #
-# === Parameters
+# Usage:
 #
-# Document parameters here.
+#   ensure  => present | absent  # set the ensure status
+#   caption => 'your caption message here' # the caption, defaults to $title
+#   message => 'your message here' # the message, defaults to $title
 #
-# [*sample_parameter*]
-#   Explanation of what this parameter affects and what it defaults to.
-#   e.g. "Specify one or more upstream ntp servers as an array."
+# If you need multiple paragraphs, you can use an array for the message, or use double quotes and the \n escape character in the message string.
 #
-# === Variables
+# Examples: 
 #
-# Here you should define a list of variables that this module would require.
+# Set caption and message to "AUTHORIZED USERS ONLY":
 #
-# [*sample_variable*]
-#   Explanation of how this variable affects the funtion of this class and if
-#   it has a default. e.g. "The parameter enc_ntp_servers must be set by the
-#   External Node Classifier as a comma separated list of hostnames." (Note,
-#   global variables should be avoided in favor of class parameters as
-#   of Puppet 2.6.)
+#   winlogon { 'AUTHORIZED USERS ONLY' : }
 #
-# === Examples
+# Set caption and a separate message:
+#   
+#   winlogon { 'AUTHORIZED USERS ONLY' :
+#     message => 'This system is for authorized users only.  All logins will be reported',
+#   }
 #
-#  class { winlogon:
-#    servers => [ 'pool.ntp.org', 'ntp.local.company.com' ],
-#  }
+# Set caption and a really long message :
 #
-# === Authors
-#
-# Author Name <author@domain.com>
+#   winlogon { 'AUTHORIZED USERS ONLY' :
+#     message => ['Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus.',
+#      'Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit.',
+#      'Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue.'],
+#   }
 #
 # === Copyright
 #
-# Copyright 2014 Your name here, unless otherwise noted.
+# Copyright 2014 Matthew Stone, unless otherwise noted.
 #
-class winlogon (
-  $ensure,
-  $caption,
-  $message,
+define winlogon (
+  $ensure  = present,
+  $caption = $title,
+  $message = $title,
 ) {
+
+  case is_array($message) {
+    true    : { $logon_message = join($message,"\n\n") }
+    false   : { $logon_message = $message }
+    default : { fail('message attribute should be true or false') }
+  }
   case $ensure {
     present: {
       registry::value { 'Manage Winlogon Caption' :
@@ -52,7 +57,7 @@ class winlogon (
         key   => 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon',
         value => 'LegalNoticeText',
         type  => string,
-        data  => $message,
+        data  => $logon_message,
       }
     }
     absent: {

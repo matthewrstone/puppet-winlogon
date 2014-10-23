@@ -4,76 +4,57 @@
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
-3. [Setup - The basics of getting started with winlogon](#setup)
-    * [What winlogon affects](#what-winlogon-affects)
-    * [Setup requirements](#setup-requirements)
-    * [Beginning with winlogon](#beginning-with-winlogon)
-4. [Usage - Configuration options and additional functionality](#usage)
-5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
+3. [Usage - Configuration options and additional functionality](#usage)
+4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
-A one-maybe-two sentence summary of what the module does/what problem it solves.
-This is your 30 second elevator pitch for your module. Consider including
-OS/Puppet version it works with.
+winlogon is a defined type that manages the logon message that pops up before the username and password prompt on a Windows server.
 
 ## Module Description
 
-If applicable, this section should have a brief description of the technology
-the module integrates with and what that integration enables. This section
-should answer the questions: "What does this module *do*?" and "Why would I use
-it?"
+The winlogon defined type edits two values in the registry:
 
-If your module has a range of functionality (installation, configuration,
-management, etc.) this is the time to mention it.
+	HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\LegalNoticeCaption
+	HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\LegalNoticeText
 
-## Setup
-
-### What winlogon affects
-
-* A list of files, packages, services, or operations that the module will alter,
-  impact, or execute on the system it's installed on.
-* This is a great place to stick any warnings.
-* Can be in list or paragraph form.
-
-### Setup Requirements **OPTIONAL**
-
-If your module requires anything extra before setting up (pluginsync enabled,
-etc.), mention it here.
-
-### Beginning with winlogon
-
-The very basic steps needed for a user to get the module up and running.
-
-If your most recent release breaks compatibility or requires particular steps
-for upgrading, you may wish to include an additional section here: Upgrading
-(For an example, see http://forge.puppetlabs.com/puppetlabs/firewall).
+Any value will cause the logon screen to appear.  A null entry will remove the screen.
 
 ## Usage
 
-Put the classes, types, and resources for customizing, configuring, and doing
-the fancy stuff with your module here.
+### Parameters
+
+	ensure  => present | absent  # set the ensure status
+	caption => 'your caption message here' # the caption, defaults to $title
+	message => 'your message here' # the message, defaults to $title
+
+If you need multiple paragraphs, you can use an array for the message, or use double quotes and the \n escape character in the message string.
+
+### Examples: 
+
+Set caption and message to "AUTHORIZED USERS ONLY":
+
+	winlogon { 'AUTHORIZED USERS ONLY' : }
+
+Set caption and a separate message:
+   
+	winlogon { 'AUTHORIZED USERS ONLY' :
+	  message => 'This system is for authorized users only.  All logins will be reported',
+	}
+
+Set caption and a really long message :
+
+	winlogon { 'AUTHORIZED USERS ONLY' :
+	  message => ['Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus.',
+	    'Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit.',
+	    'Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue.'],
+	}
 
 ## Reference
 
-Here, list the classes, types, providers, facts, etc contained in your module.
-This section should include all of the under-the-hood workings of your module so
-people know what the module is touching on their system but don't need to mess
-with things. (We are working on automating this section!)
+Defined Type: winlogon
 
 ## Limitations
 
-This is where you list OS compatibility, version compatibility, etc.
-
-## Development
-
-Since your module is awesome, other users will want to play with it. Let them
-know what the ground rules for contributing are.
-
-## Release Notes/Contributors/Etc **Optional**
-
-If you aren't using changelog, put your release notes here (though you should
-consider using changelog). You may also add any additional sections you feel are
-necessary or important to include here. Please use the `## ` header.
+Tested on Windows 2008 R2 and Windows 2012 R2 with Windows Management Framework 3.0 and greater.
